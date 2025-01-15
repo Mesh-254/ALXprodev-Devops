@@ -10,8 +10,12 @@ weight=$(jq -r '.weight' data.json)
 height=$(jq -r '.height' data.json)
 
 
-# Format the output using sed to replace units and awk to adjust spacing or string format
-echo "$name is of type $type, weighs ${weight}kg, and is ${height}m tall." | sed 's/ kg/ kg/g' | awk '{print $0}'
+# Convert weight from grams to kilograms using awk
+formatted_weight=$(echo "$weight" | awk '{print $1/1000}')
 
+# Convert height from centimeters to meters using awk
+formatted_height=$(echo "$height" | awk '{print $1/100}')
 
+# Format the output in a human-readable way using sed (example of pattern replaceme
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall." | sed 's/\.0*//' | awk '{print $0}'
 
