@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+
+# Define the array of Pokémon names
+
+pokemon=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+for pokemon in ${pokemon[@]}; do
+    # Retrieve data for each Pokémon and store it in a separate file
+
+    curl -s https://pokeapi.co/api/v2/pokemon/$pokemon  -o "$pokemon.json"
+    echo $pokemon pokemon file created
+
+    # Add a delay to handle rate-limiting (e.g., 1 second between requests)
+    sleep 1
+done
