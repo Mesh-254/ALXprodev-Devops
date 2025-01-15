@@ -9,7 +9,9 @@ type=$(jq -r '.types[0].type.name' data.json)
 weight=$(jq -r '.weight' data.json)
 height=$(jq -r '.height' data.json)
 
-echo "$name is of type $type, weighs $weight kg, and is $height m tall."
+
+# Format the output using sed to replace units and awk to adjust spacing or string format
+echo "$name is of type $type, weighs ${weight}kg, and is ${height}m tall." | sed 's/ kg/ kg/g' | awk '{print $0}'
 
 
 
