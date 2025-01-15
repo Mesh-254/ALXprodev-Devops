@@ -1,0 +1,15 @@
+#!/usr/bin/bash 
+
+
+# Command to read data.json file 
+# data=jq '{name, height, weight, type:.types[0].type.name}' data.json
+
+name=$(jq -r '.name' data.json)
+type=$(jq -r '.types[0].type.name' data.json)
+weight=$(jq -r '.weight' data.json)
+height=$(jq -r '.height' data.json)
+
+echo "$name is of type $type, weighs $weight kg, and is $height m tall."
+
+
+
