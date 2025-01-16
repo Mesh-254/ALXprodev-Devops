@@ -7,6 +7,7 @@ fetch_pokemon_data() {
     # assigns the first argument passed to a function
     pokemon=$1
 
+    # HTTP request to fetch data
     http_response=$(curl -s "https://pokeapi.co/api/v2/pokemon/$pokemon" -w "%{http_code}" -o $pokemon.json)
 
     if [ "$http_response" -eq 200 ]; then
@@ -16,13 +17,30 @@ fetch_pokemon_data() {
     fi   
 }
 
+# Track job PIDs
+job_pids=()
+
 for pokemon in "${pokemon[@]}"; do
     echo "Fetching data for $pokemon..."
+
     # We are passing the variable $1 as an arguement 
+    # also making the function run as a bg process using &
     fetch_pokemon_data $pokemon &
+
+    # Capture the PID of the background process
+    job_pids+=($!)
+
 done
 
 # Wait for all background processes to complete
 wait
+
+#list running background jobs
+jobs
+
+for pid in "${job_pids[@]}"; do
+    echo "Killing the job with PID $pid"
+    kill $pid
+done
 
 echo "All Pokémon data retrieval tasks have been completed."
