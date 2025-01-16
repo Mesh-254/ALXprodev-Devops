@@ -8,9 +8,40 @@ pokemon=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 for pokemon in ${pokemon[@]}; do
     # Retrieve data for each Pokémon and store it in a separate file
 
-    curl -s https://pokeapi.co/api/v2/pokemon/$pokemon  -o "$pokemon.json"
-    echo $pokemon pokemon data json file created
+    # Initialize retry counter
+    retry_count=0
+    # Initialize to a non-success status to enter the loop
+    http_response=1
+
+    # Retry up to 3 times if the request fails
+    while [ $retry_count -lt 3 ] && [ "$http_response" -ne 200 ]; do
+
+        echo "Attempting to fetch data for $pokemon, try #$((retry_count + 1))..."
+        # Make the HTTP request
+        http_response=$(curl -s https://pokeapi.co/api/v2/pokemon/$pokemon -w "%{http_code}" -o "$pokemon.json")
+
+        if [ "$http_response" -ne 200 ]; then
+            echo "Error: Failed to retrieve data for $pokemon (HTTP Status $http_response). Retrying..."
+
+            # Increment the retry counter
+            retry_count=$((retry_count + 1))
+
+            sleep 1
+        fi      
+    done
+
+    # Check if the request succeeded or failed after retries
+
+    if [ "$http_response" -eq 200 ]; then
+
+        echo "Data for $pokemon retrieved successfully."
+       
+    else
+        echo "Error: Failed to retrieve data for $pokemon after 3 attempts."
+        
+    fi 
 
     # Add a delay to handle rate-limiting (e.g., 1 second between requests)
     sleep 1
+
 done
