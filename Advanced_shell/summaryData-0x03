@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+# bash script to Summarize multiple Pokémon Data
+
+
+# Define the data files
+data_files=("bulbasaur.json" "ivysaur.json" "venusaur.json" "charmander.json" "charmeleon.json")
+
+# Create or overwrite the summary.csv file with the header
+echo -e "name\theight\tweight" > summary.csv
+
+
+# Loop through each data file and extract the required fields
+for file in "${data_files[@]}"; do
+    name=$(jq -r '.name' $file)
+    height=$(jq -r '.height' $file)
+    weight=$(jq -r '.weight' $file)
+
+    echo -e "$name\t$height\t$weight" >> summary.csv
+done
+
+# Process the CSV file, skipping the first line
+avg_height=$(awk 'NR>1 {sum +=$2; count++} 
+    END {if (count>0) print "Average height: " sum/count; else print "No data"}' summary.csv)
+
+avg_weight=$(awk 'NR>1 {sum +=$3; count++} 
+    END {if (count>0) print "Average weight: " sum/count; else print "No data"}' summary.csv)
+
+echo -e "\n$avg_height\n$avg_weight" >> summary.csv
+
