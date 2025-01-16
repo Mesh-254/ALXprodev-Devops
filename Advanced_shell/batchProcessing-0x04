@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+
+pokemon=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+fetch_pokemon_data() {
+
+    # assigns the first argument passed to a function
+    pokemon=$1
+
+    http_response=$(curl -s "https://pokeapi.co/api/v2/pokemon/$pokemon" -w "%{http_code}" -o $pokemon.json)
+
+    if [ "$http_response" -eq 200 ]; then
+        echo "$pokemon data fetched successfully"
+    else
+        echo "Failed to fetch $pokemon data"
+    fi   
+}
+
+for pokemon in "${pokemon[@]}"; do
+    echo "Fetching data for $pokemon..."
+    # We are passing the variable $1 as an arguement 
+    fetch_pokemon_data $pokemon &
+done
+
+# Wait for all background processes to complete
+wait
+
+echo "All Pokémon data retrieval tasks have been completed."
