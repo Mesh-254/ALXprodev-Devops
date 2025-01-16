@@ -21,10 +21,11 @@ done
 
 # Process the CSV file, skipping the first line
 avg_height=$(awk 'NR>1 {sum +=$2; count++} 
-    END {if (count>0) print "Average height: " sum/count; else print "No data"}' summary.csv)
+    END {if (count>0) print sum/count; else print "No data"}' summary.csv)
 
 avg_weight=$(awk 'NR>1 {sum +=$3; count++} 
-    END {if (count>0) print "Average weight: " sum/count; else print "No data"}' summary.csv)
+    END {if (count>0) print sum/count; else print "No data"}' summary.csv)
 
-echo -e "\n$avg_height\n$avg_weight" >> summary.csv
+
+sed -i "\$a\\Average Height: $avg_height m\\nAverage Weight: $avg_weight kg" summary.csv
 
